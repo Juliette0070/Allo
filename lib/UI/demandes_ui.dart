@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class WidgetDemandes extends StatelessWidget {
   List<Widget> _getAllWidgetsDemandes() {
-    // List<Task> tasks = Task.generateTask(7);
     List<Widget> listeDemandes = [];
     for (int i = 0; i < 15; i++) {
       Widget taskWidget = Card(
@@ -22,14 +21,16 @@ class WidgetDemandes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(8),
-      children: _getAllWidgetsDemandes(),
+    return Scaffold(
+      body: ListView(
+        padding: const EdgeInsets.all(8),
+        children: _getAllWidgetsDemandes(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        tooltip: 'Nouvelle demande',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
-//   @override
-//   Widget build(BuildContext context) {
-//     return Text("Demandes");
-//   }
-// }
