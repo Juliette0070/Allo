@@ -1,3 +1,4 @@
+import 'package:allo/UI/demandes_ui.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -28,13 +29,6 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _WidgetDemandes extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Text("Demandes");
-  }
-}
-
 class _WidgetMateriel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -52,12 +46,12 @@ class _WidgetSettings extends StatelessWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = [
-    _WidgetDemandes(),
+    WidgetDemandes(),
     _WidgetMateriel(),
     _WidgetSettings()
   ];
 
-  void _onItemTapped(int index){
+  void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -72,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
-        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
@@ -84,9 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
             label: "Mon matériel",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Paramètres"
-          )
+              icon: Icon(Icons.settings), label: "Paramètres")
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
