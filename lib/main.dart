@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:allo/UI/mon-materiel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -53,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = [
     _WidgetDemandes(),
-    _WidgetMateriel(),
+    const WidgetMateriel(),
     _WidgetSettings()
   ];
 
