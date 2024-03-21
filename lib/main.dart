@@ -31,7 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _WidgetDemandes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Text("Demandes");
+    return const Text("Demandes");
   }
 }
 
