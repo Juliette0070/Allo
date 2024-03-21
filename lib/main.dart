@@ -38,14 +38,14 @@ class _WidgetDemandes extends StatelessWidget {
 class _WidgetMateriel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Text("Mon matériel");
+    return const Text("Mon matériel");
   }
 }
 
 class _WidgetSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Text("Paramètres");
+    return const Text("Paramètres");
   }
 }
 
