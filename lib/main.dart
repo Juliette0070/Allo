@@ -8,11 +8,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   await Supabase.initialize(
-    url: 'https://xyzcompany.supabase.co',
-    anonKey: 'public-anon-key',
+    url:
+        'postgres://postgres.bxbonhvpfxrehmqygibc:Z0rxjJe!&eoyO8wn74uX2e@aws-0-eu-west-2.pooler.supabase.com:5432/postgres',
+    anonKey: 'Z0rxjJe!&eoyO8wn74uX2e',
   );
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 // Get a reference your Supabase client
