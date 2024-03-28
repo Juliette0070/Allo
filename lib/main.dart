@@ -1,17 +1,33 @@
 import 'package:allo/mytheme.dart';
+import 'package:allo/UI/demandes_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:allo/UI/mon-materiel.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+// void main() {
+//   runApp(const MyApp());
+// }
+
+Future<void> main() async {
+  await Supabase.initialize(
+    url:
+        'postgres://postgres.bxbonhvpfxrehmqygibc:Z0rxjJe!&eoyO8wn74uX2e@aws-0-eu-west-2.pooler.supabase.com:5432/postgres',
+    anonKey: 'Z0rxjJe!&eoyO8wn74uX2e',
+  );
+
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget{
+// Get a reference your Supabase client
+final supabase = Supabase.instance.client;
+
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -111,13 +127,6 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _WidgetDemandes extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Text("Demandes");
-  }
-}
-
 class _WidgetMateriel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -135,12 +144,12 @@ class _WidgetSettings extends StatelessWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = [
-    _WidgetDemandes(),
-    _WidgetMateriel(),
+    WidgetDemandes(),
+    WidgetMateriel(),
     WidgetSettings()
   ];
 
-  void _onItemTapped(int index){
+  void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -155,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
-        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
