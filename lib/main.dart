@@ -11,6 +11,15 @@ Future<void> main() async {
     url:
         'postgres://postgres.bxbonhvpfxrehmqygibc:Z0rxjJe!&eoyO8wn74uX2e@aws-0-eu-west-2.pooler.supabase.com:5432/postgres',
     anonKey: 'Z0rxjJe!&eoyO8wn74uX2e',
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
+    realtimeClientOptions: const RealtimeClientOptions(
+      logLevel: RealtimeLogLevel.info,
+    ),
+    storageOptions: const StorageClientOptions(
+      retryAttempts: 10,
+    ),
   );
 
   runApp(const MyApp());

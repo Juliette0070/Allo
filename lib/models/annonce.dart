@@ -1,6 +1,4 @@
 class Annonce {
-  // idAnn, nomAnn, descAnn, etatAnn, idCat
-
   int _idAnn;
   String _nomAnn;
   String _descAnn;
