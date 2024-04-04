@@ -8,18 +8,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   await Supabase.initialize(
-    url:
-        'postgres://postgres.bxbonhvpfxrehmqygibc:Z0rxjJe!&eoyO8wn74uX2e@aws-0-eu-west-2.pooler.supabase.com:5432/postgres',
-    anonKey: 'Z0rxjJe!&eoyO8wn74uX2e',
-    authOptions: const FlutterAuthClientOptions(
-      authFlowType: AuthFlowType.pkce,
-    ),
-    realtimeClientOptions: const RealtimeClientOptions(
-      logLevel: RealtimeLogLevel.info,
-    ),
-    storageOptions: const StorageClientOptions(
-      retryAttempts: 10,
-    ),
+    url: 'https://bxbonhvpfxrehmqygibc.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4Ym9uaHZwZnhyZWhtcXlnaWJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEzNzkxMDIsImV4cCI6MjAyNjk1NTEwMn0.S88Db_N_hsC7Elwq4Qvgp_yxLZq-CSGfgOx14xessV8',
   );
 
   runApp(const MyApp());
