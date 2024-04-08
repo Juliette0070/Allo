@@ -2,9 +2,10 @@ import 'package:allo/mytheme.dart';
 import 'package:allo/UI/demandes_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:allo/UI/mon-materiel.dart';
+import 'package:allo/UI/mon_materiel.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:allo/UI/parametres.dart';
+import 'package:allo/UI/mes_prets.dart';
 
 Future<void> main() async {
   await Supabase.initialize(
@@ -50,13 +51,6 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _WidgetMateriel extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Text("Mon matériel");
-  }
-}
-
 class _WidgetSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -70,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
     WidgetDemandes(),
     _WidgetSettings(),
     const WidgetMateriel(),
-    _WidgetMateriel(),
+    const WidgetPrets(),
   ];
 
   void _onItemTapped(int index) {
