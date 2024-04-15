@@ -35,4 +35,13 @@ class SupabaseService {
       throw Exception('Failed to add user: ${response.error!.message}');
     }
   }
+
+  // Une méthode pour récupérer toutes les annonces de la base de données :
+  Future<List<Map<String, dynamic>>> fetchAnnonces() async {
+    final response = await _supabaseClient.from('ANNONCE').select();
+    if (response.isEmpty) {
+      throw Exception('Failed to fetch annonces (or no data available)');
+    }
+    return response;
+  }
 }
