@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class WidgetDemandes extends StatelessWidget {
+  const WidgetDemandes({super.key});
+
   List<Widget> _getAllWidgetsDemandes() {
     List<Widget> listeDemandes = [];
     for (int i = 0; i < 15; i++) {

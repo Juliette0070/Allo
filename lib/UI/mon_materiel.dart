@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:allo/models/materiel.dart';
 import 'package:allo/api/bdmateriel.dart';
 import 'package:allo/UI/info_materiel.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class WidgetMateriel extends StatefulWidget {
   const WidgetMateriel({Key? key}) : super(key: key);
@@ -21,7 +22,12 @@ class WidgetMaterielState extends State<WidgetMateriel> {
 
   void updateMateriel() {
     setState(() {
-      materielsFuture = DatabaseHelper.instance.getMaterielsDisponibles(true);
+      final user = Supabase.instance.client.auth.currentUser;
+      var userUUID = '';
+      if (user != null) {
+        userUUID = user.id;
+      }
+      materielsFuture = DatabaseHelper.instance.getMaterielsDisponibles(userUUID);
     });
   }
 
@@ -29,7 +35,8 @@ class WidgetMaterielState extends State<WidgetMateriel> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Liste des matériels'),
+        title: const Text('Liste de mes matériels'),
+        automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<List<Materiel>>(
         future: materielsFuture,
@@ -79,7 +86,11 @@ class WidgetMaterielState extends State<WidgetMateriel> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AjoutMaterielScreen()),
+            MaterialPageRoute(
+                builder: (context) => AjoutMaterielScreen(
+                    onUpdate: updateMateriel
+                )
+            ),
           );
         },
         tooltip: 'Nouveau matériel',
@@ -90,7 +101,9 @@ class WidgetMaterielState extends State<WidgetMateriel> {
 }
 
 class AjoutMaterielScreen extends StatefulWidget {
-  const AjoutMaterielScreen({Key? key}) : super(key: key);
+  final Function() onUpdate;
+
+  const AjoutMaterielScreen({Key? key, required this.onUpdate}) : super(key: key);
 
   @override
   AjoutMaterielScreenState createState() => AjoutMaterielScreenState();
@@ -99,24 +112,43 @@ class AjoutMaterielScreen extends StatefulWidget {
 class AjoutMaterielScreenState extends State<AjoutMaterielScreen> {
   final _nomController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _categorieController = TextEditingController();
+  int _selectedCategorie = 1; // Catégorie par défaut (autre)
+  late String _userUUID; // UUID de l'utilisateur
+
+  // Options de catégorie
+  final Map<int, String> _categories = {1: 'Autre', 2: 'Catégorie 2', 3: 'Catégorie 3'};
 
   @override
-  void dispose() {
-    _nomController.dispose();
-    _descriptionController.dispose();
-    _categorieController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _getUserUUID(); // Appel de la fonction pour récupérer l'UUID de l'utilisateur
+  }
+
+  // Fonction pour récupérer l'UUID de l'utilisateur
+  void _getUserUUID() async {
+    // Récupérer l'utilisateur actuellement authentifié
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null) {
+      // Récupérer l'UUID de l'utilisateur
+      _userUUID = user.id;
+    }
   }
 
   Future<void> _ajouterMateriel(BuildContext context) async {
     final nom = _nomController.text;
     final description = _descriptionController.text;
-    final categorie = _categorieController.text;
-    final materiel = Materiel(await DatabaseHelper.instance.getMaxId() + 1, nom, description, true, categorie);
+    final categorie = _selectedCategorie; // Utilisation de la catégorie sélectionnée
+    final materiel = Materiel(
+        await DatabaseHelper.instance.getMaxId() + 1,
+        nom,
+        description,
+        _userUUID, // Utilisation de l'UUID de l'utilisateur
+        categorie,
+        1);
     await DatabaseHelper.instance.insertMateriel(materiel);
     // Utiliser Navigator.pop avec les données du nouveau matériel ajouté
     Navigator.pop(context, materiel);
+    widget.onUpdate();
   }
 
   @override
@@ -138,8 +170,19 @@ class AjoutMaterielScreenState extends State<AjoutMaterielScreen> {
               controller: _descriptionController,
               decoration: const InputDecoration(labelText: 'Description'),
             ),
-            TextField(
-              controller: _categorieController,
+            DropdownButtonFormField<int>(
+              value: _selectedCategorie,
+              onChanged: (int? newValue) {
+                setState(() {
+                  _selectedCategorie = newValue ?? 1;
+                });
+              },
+              items: _categories.entries.map((MapEntry<int, String> categorie) {
+                return DropdownMenuItem<int>(
+                  value: categorie.key,
+                  child: Text(categorie.value),
+                );
+              }).toList(),
               decoration: const InputDecoration(labelText: 'Catégorie'),
             ),
             const SizedBox(height: 20),

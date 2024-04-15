@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:allo/models/materiel.dart';
 import 'package:allo/api/bdmateriel.dart';
 import 'package:allo/UI/info_materiel.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class WidgetPrets extends StatefulWidget {
   const WidgetPrets({Key? key}) : super(key: key);
@@ -21,7 +22,12 @@ class WidgetPretsState extends State<WidgetPrets> {
 
   void updateMateriel() {
     setState(() {
-      materielsFuture = DatabaseHelper.instance.getMaterielsDisponibles(false);
+      final user = Supabase.instance.client.auth.currentUser;
+      var userUUID = '';
+      if (user != null) {
+        userUUID = user.id;
+      }
+      materielsFuture = DatabaseHelper.instance.getMaterielsNonDisponibles(userUUID);
     });
   }
 
@@ -29,7 +35,8 @@ class WidgetPretsState extends State<WidgetPrets> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Liste des matériels'),
+        title: const Text('Liste de mes prêts'),
+        automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<List<Materiel>>(
         future: materielsFuture,
@@ -74,81 +81,6 @@ class WidgetPretsState extends State<WidgetPrets> {
             );
           }
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AjoutMaterielScreen()),
-          );
-        },
-        tooltip: 'Nouveau matériel',
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-class AjoutMaterielScreen extends StatefulWidget {
-  const AjoutMaterielScreen({Key? key}) : super(key: key);
-
-  @override
-  AjoutMaterielScreenState createState() => AjoutMaterielScreenState();
-}
-
-class AjoutMaterielScreenState extends State<AjoutMaterielScreen> {
-  final _nomController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _categorieController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nomController.dispose();
-    _descriptionController.dispose();
-    _categorieController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _ajouterMateriel(BuildContext context) async {
-    final nom = _nomController.text;
-    final description = _descriptionController.text;
-    final categorie = _categorieController.text;
-    final materiel = Materiel(await DatabaseHelper.instance.getMaxId() + 1, nom, description, true, categorie);
-    await DatabaseHelper.instance.insertMateriel(materiel);
-    // Utiliser Navigator.pop avec les données du nouveau matériel ajouté
-    Navigator.pop(context, materiel);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ajouter un matériel'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _nomController,
-              decoration: const InputDecoration(labelText: 'Nom'),
-            ),
-            TextField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(labelText: 'Description'),
-            ),
-            TextField(
-              controller: _categorieController,
-              decoration: const InputDecoration(labelText: 'Catégorie'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _ajouterMateriel(context),
-              child: const Text('Ajouter'),
-            ),
-          ],
-        ),
       ),
     );
   }

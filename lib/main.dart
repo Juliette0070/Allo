@@ -1,24 +1,36 @@
 import 'package:allo/mytheme.dart';
-import 'package:allo/UI/demandes_ui.dart';
+import 'package:allo/UI/demandes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:allo/UI/mon_materiel.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:allo/UI/parametres.dart';
 import 'package:allo/UI/mes_prets.dart';
+import 'package:allo/UI/reservations.dart';
+import 'package:allo/UI/login.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
     url:
-        'postgres://postgres.bxbonhvpfxrehmqygibc:Z0rxjJe!&eoyO8wn74uX2e@aws-0-eu-west-2.pooler.supabase.com:5432/postgres',
-    anonKey: 'Z0rxjJe!&eoyO8wn74uX2e',
+        'https://wjaarazmugtqnolxixuc.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqYWFyYXptdWd0cW5vbHhpeHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI1NDI2ODIsImV4cCI6MjAyODExODY4Mn0.SCGG3uQfzyEBW8b1UmyUH3VHcLu3hIzUV3l-QRyKfyU',
   );
 
-  runApp(const MyApp());
+  runApp(const Application());
 }
 
-// Get a reference your Supabase client
-final supabase = Supabase.instance.client;
+class Application extends StatelessWidget {
+  const Application({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      title: 'All O',
+      home: Login(),
+    );
+  }
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -51,18 +63,11 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _WidgetSettings extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Text("Paramètres");
-  }
-}
-
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = [
-    WidgetDemandes(),
-    _WidgetSettings(),
+    const WidgetDemandes(),
+    const WidgetReservations(),
     const WidgetMateriel(),
     const WidgetPrets(),
   ];

@@ -15,14 +15,15 @@ class MaterielDetailsPage extends StatefulWidget {
 class MaterielDetailsPageState extends State<MaterielDetailsPage> {
   late TextEditingController _nomController;
   late TextEditingController _descriptionController;
-  late TextEditingController _categorieController;
+  late int _selectedCategorie;
+  final Map<int, String> _categories = {1: 'Autre', 2: 'Catégorie 2', 3: 'Catégorie 3'};
 
   @override
   void initState() {
     super.initState();
     _nomController = TextEditingController(text: widget.materiel.nom);
     _descriptionController = TextEditingController(text: widget.materiel.description);
-    _categorieController = TextEditingController(text: widget.materiel.categorie);
+    _selectedCategorie = widget.materiel.idCategorie; // Initialisation avec la catégorie actuelle du matériel
   }
 
   @override
@@ -44,14 +45,20 @@ class MaterielDetailsPageState extends State<MaterielDetailsPage> {
               controller: _descriptionController,
               decoration: const InputDecoration(labelText: 'Description'),
             ),
-            TextField(
-              controller: _categorieController,
+            DropdownButtonFormField<int>(
+              value: _selectedCategorie,
+              onChanged: (int? newValue) {
+                setState(() {
+                  _selectedCategorie = newValue ?? 1;
+                });
+              },
+              items: _categories.entries.map((MapEntry<int, String> categorie) {
+                return DropdownMenuItem<int>(
+                  value: categorie.key,
+                  child: Text(categorie.value),
+                );
+              }).toList(),
               decoration: const InputDecoration(labelText: 'Catégorie'),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Disponible : ${widget.materiel.disponible ? 'Oui' : 'Non'}',
-              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),
             Row(
@@ -81,7 +88,7 @@ class MaterielDetailsPageState extends State<MaterielDetailsPage> {
     final updatedMateriel = widget.materiel.copyWith(
       nom: _nomController.text,
       description: _descriptionController.text,
-      categorie: _categorieController.text,
+      idCategorie: _selectedCategorie, // Mettre à jour la catégorie avec la nouvelle valeur
     );
     await DatabaseHelper.instance.updateMateriel(updatedMateriel);
     widget.onUpdate();
@@ -98,8 +105,6 @@ class MaterielDetailsPageState extends State<MaterielDetailsPage> {
   void dispose() {
     _nomController.dispose();
     _descriptionController.dispose();
-    _categorieController.dispose();
     super.dispose();
   }
 }
-

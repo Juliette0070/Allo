@@ -5,7 +5,9 @@ import 'package:allo/models/materiel.dart';
 class DatabaseHelper {
   static const _databaseName = 'mon_application.db';
   static const _databaseVersion = 1;
-  static const _tableName = 'materiels';
+  static const _tableMateriels = 'materiels';
+  static const _tableCategories = 'categories';
+  static const _tableEtats = 'etats';
 
   // Créer une instance unique de DatabaseHelper
   DatabaseHelper._privateConstructor();
@@ -26,12 +28,41 @@ class DatabaseHelper {
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE $_tableName (
+      CREATE TABLE $_tableEtats (
+        id INTEGER PRIMARY KEY,
+        nom TEXT NOT NULL
+      );
+    ''');
+    await db.execute('''
+      INSERT INTO $_tableEtats (nom) VALUES ('disponible');
+      INSERT INTO $_tableEtats (nom) VALUES ('en cours de pret');
+      INSERT INTO $_tableEtats (nom) VALUES ('pret fini');
+    ''');
+    await db.execute('''
+      CREATE TABLE $_tableCategories (
+        id INTEGER PRIMARY KEY,
+        nom TEXT NOT NULL
+      );
+    ''');
+    await db.execute('''
+      INSERT INTO $_tableCategories (nom) VALUES ('Autre');
+      INSERT INTO $_tableCategories (nom) VALUES ('Informatique');
+      INSERT INTO $_tableCategories (nom) VALUES ('Electroménager');
+      INSERT INTO $_tableCategories (nom) VALUES ('Bricolage');
+      INSERT INTO $_tableCategories (nom) VALUES ('Jardinage');
+      INSERT INTO $_tableCategories (nom) VALUES ('Sport');
+      INSERT INTO $_tableCategories (nom) VALUES ('Outillage');
+    ''');
+    await db.execute('''
+      CREATE TABLE $_tableMateriels (
         id INTEGER PRIMARY KEY,
         nom TEXT NOT NULL,
         description TEXT NOT NULL,
-        disponible INTEGER,
-        categorie TEXT
+        uuid_utilisateur TEXT NOT NULL,
+        id_categorie INTEGER,
+        id_etat INTEGER,
+        FOREIGN KEY (id_categorie) REFERENCES categories (id),
+        FOREIGN KEY (id_etat) REFERENCES etats (id)
       );
     ''');
   }
@@ -39,7 +70,7 @@ class DatabaseHelper {
   // récupérer l'id le plus haut
   Future<int> getMaxId() async {
     final db = await database;
-    final List<Map<String, dynamic>> materielsMap = await db.query(_tableName);
+    final List<Map<String, dynamic>> materielsMap = await db.query(_tableMateriels);
     int maxId = 0;
     for (int i = 0; i < materielsMap.length; i++) {
       if (materielsMap[i]['id'] > maxId) {
@@ -52,7 +83,7 @@ class DatabaseHelper {
   Future<void> insertMateriel(Materiel materiel) async {
     final db = await database;
     await db.insert(
-      _tableName,
+      _tableMateriels,
       materiel.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -60,15 +91,23 @@ class DatabaseHelper {
 
   Future<List<Materiel>> getAllMateriels() async {
     final db = await database;
-    final List<Map<String, dynamic>> materielsMap = await db.query(_tableName);
+    final List<Map<String, dynamic>> materielsMap = await db.query(_tableMateriels);
     return List.generate(materielsMap.length, (index) {
       return Materiel.fromMap(materielsMap[index]);
     });
   }
 
-  Future<List<Materiel>> getMaterielsDisponibles(bool disponible) async {
+  Future<List<Materiel>> getMaterielsDisponibles(uuid) async {
     final db = await database;
-    final List<Map<String, dynamic>> materielsMap = await db.query(_tableName, where: 'disponible = ?', whereArgs: [disponible ? 1 : 0]);
+    final List<Map<String, dynamic>> materielsMap = await db.query(_tableMateriels, where: 'id_etat = 1 and uuid_utilisateur == ?', whereArgs: [uuid]);
+    return List.generate(materielsMap.length, (index) {
+      return Materiel.fromMap(materielsMap[index]);
+    });
+  }
+
+  Future<List<Materiel>> getMaterielsNonDisponibles(uuid) async {
+    final db = await database;
+    final List<Map<String, dynamic>> materielsMap = await db.query(_tableMateriels, where: 'id_etat != 1 and uuid_utilisateur == ?', whereArgs: [uuid]);
     return List.generate(materielsMap.length, (index) {
       return Materiel.fromMap(materielsMap[index]);
     });
@@ -77,7 +116,7 @@ class DatabaseHelper {
   Future<void> updateMateriel(Materiel materiel) async {
     final db = await database;
     await db.update(
-      _tableName,
+      _tableMateriels,
       materiel.toMap(),
       where: 'id = ?',
       whereArgs: [materiel.id],
@@ -87,10 +126,9 @@ class DatabaseHelper {
   Future<void> deleteMateriel(int id) async {
     final db = await database;
     await db.delete(
-      _tableName,
+      _tableMateriels,
       where: 'id = ?',
       whereArgs: [id],
     );
   }
-
 }
