@@ -54,6 +54,10 @@ class WidgetPretsState extends State<WidgetPrets> {
               itemCount: materiels.length,
               itemBuilder: (context, index) {
                 final materiel = snapshot.data![index];
+                var logo = const Icon(Icons.help, color: Colors.yellow);
+                if (materiel.idEtat == 1) {logo = const Icon(Icons.check_circle, color: Colors.green);}
+                else if (materiel.idEtat == 2) {logo = const Icon(Icons.cancel, color: Colors.red);}
+                else if (materiel.idEtat == 3) {logo = const Icon(Icons.pending);}
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -68,7 +72,7 @@ class WidgetPretsState extends State<WidgetPrets> {
                   },
                   child: Card(
                     child: ListTile(
-                      leading: const FlutterLogo(),
+                      leading: logo,
                       title: Text(
                         materiel.nom,
                         style: const TextStyle(fontWeight: FontWeight.bold),

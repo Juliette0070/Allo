@@ -33,26 +33,23 @@ class DatabaseHelper {
         nom TEXT NOT NULL
       );
     ''');
-    await db.execute('''
-      INSERT INTO $_tableEtats (nom) VALUES ('disponible');
-      INSERT INTO $_tableEtats (nom) VALUES ('en cours de pret');
-      INSERT INTO $_tableEtats (nom) VALUES ('pret fini');
-    ''');
+    await db.execute('''INSERT INTO $_tableEtats (id, nom) VALUES (1, 'disponible');''');
+    await db.execute('''INSERT INTO $_tableEtats (id, nom) VALUES (2, 'en cours de pret');''');
+    await db.execute('''INSERT INTO $_tableEtats (id, nom) VALUES (3, 'pret fini');''');
+
     await db.execute('''
       CREATE TABLE $_tableCategories (
         id INTEGER PRIMARY KEY,
         nom TEXT NOT NULL
       );
     ''');
-    await db.execute('''
-      INSERT INTO $_tableCategories (nom) VALUES ('Autre');
-      INSERT INTO $_tableCategories (nom) VALUES ('Informatique');
-      INSERT INTO $_tableCategories (nom) VALUES ('Electroménager');
-      INSERT INTO $_tableCategories (nom) VALUES ('Bricolage');
-      INSERT INTO $_tableCategories (nom) VALUES ('Jardinage');
-      INSERT INTO $_tableCategories (nom) VALUES ('Sport');
-      INSERT INTO $_tableCategories (nom) VALUES ('Outillage');
-    ''');
+    await db.execute('''INSERT INTO $_tableCategories (id, nom) VALUES (1, 'Autre');''');
+    await db.execute('''INSERT INTO $_tableCategories (id, nom) VALUES (2, 'Informatique');''');
+    await db.execute('''INSERT INTO $_tableCategories (id, nom) VALUES (3, 'Electroménager');''');
+    await db.execute('''INSERT INTO $_tableCategories (id, nom) VALUES (4, 'Bricolage');''');
+    await db.execute('''INSERT INTO $_tableCategories (id, nom) VALUES (5, 'Jardinage');''');
+    await db.execute('''INSERT INTO $_tableCategories (id, nom) VALUES (6, 'Sport');''');
+    await db.execute('''INSERT INTO $_tableCategories (id, nom) VALUES (7, 'Outillage');''');
     await db.execute('''
       CREATE TABLE $_tableMateriels (
         id INTEGER PRIMARY KEY,

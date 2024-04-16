@@ -54,6 +54,10 @@ class WidgetMaterielState extends State<WidgetMateriel> {
               itemCount: materiels.length,
               itemBuilder: (context, index) {
                 final materiel = snapshot.data![index];
+                var logo = const Icon(Icons.help, color: Colors.yellow);
+                if (materiel.idEtat == 1) {logo = const Icon(Icons.check_circle, color: Colors.green);}
+                else if (materiel.idEtat == 2) {logo = const Icon(Icons.cancel, color: Colors.red);}
+                else if (materiel.idEtat == 3) {logo = const Icon(Icons.pending, color: Colors.blue,);}
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -68,7 +72,7 @@ class WidgetMaterielState extends State<WidgetMateriel> {
                   },
                   child: Card(
                     child: ListTile(
-                      leading: const FlutterLogo(),
+                      leading: logo,
                       title: Text(
                         materiel.nom,
                         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -116,12 +120,20 @@ class AjoutMaterielScreenState extends State<AjoutMaterielScreen> {
   late String _userUUID; // UUID de l'utilisateur
 
   // Options de catégorie
-  final Map<int, String> _categories = {1: 'Autre', 2: 'Catégorie 2', 3: 'Catégorie 3'};
+  List<Map<String, dynamic>> _categories = [];
+
 
   @override
   void initState() {
     super.initState();
     _getUserUUID(); // Appel de la fonction pour récupérer l'UUID de l'utilisateur
+    _getCategories(); // Appel de la fonction pour récupérer les catégories
+  }
+
+  void _getCategories() async {
+    final db = await DatabaseHelper.instance.database;
+    _categories = await db.query('categories');
+    setState(() {});
   }
 
   // Fonction pour récupérer l'UUID de l'utilisateur
@@ -177,12 +189,12 @@ class AjoutMaterielScreenState extends State<AjoutMaterielScreen> {
                   _selectedCategorie = newValue ?? 1;
                 });
               },
-              items: _categories.entries.map((MapEntry<int, String> categorie) {
-                return DropdownMenuItem<int>(
-                  value: categorie.key,
-                  child: Text(categorie.value),
-                );
-              }).toList(),
+              items: _categories.map((Map<String, dynamic> categorie) {
+                               return DropdownMenuItem<int>(
+                                 value: categorie['id'] as int,
+                                 child: Text(categorie['nom'] as String),
+                               );
+                             }).toList(),
               decoration: const InputDecoration(labelText: 'Catégorie'),
             ),
             const SizedBox(height: 20),

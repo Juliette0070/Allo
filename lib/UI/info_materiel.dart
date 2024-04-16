@@ -16,7 +16,8 @@ class MaterielDetailsPageState extends State<MaterielDetailsPage> {
   late TextEditingController _nomController;
   late TextEditingController _descriptionController;
   late int _selectedCategorie;
-  final Map<int, String> _categories = {1: 'Autre', 2: 'Catégorie 2', 3: 'Catégorie 3'};
+  List<Map<String, dynamic>> _categories = [];
+  String _etat = '';
 
   @override
   void initState() {
@@ -24,6 +25,22 @@ class MaterielDetailsPageState extends State<MaterielDetailsPage> {
     _nomController = TextEditingController(text: widget.materiel.nom);
     _descriptionController = TextEditingController(text: widget.materiel.description);
     _selectedCategorie = widget.materiel.idCategorie; // Initialisation avec la catégorie actuelle du matériel
+    _getCategories(); // Appel de la fonction pour récupérer les catégories
+    _getEtat(); // Appel de la fonction pour récupérer l'état du matériel
+  }
+
+  void _getEtat() async {
+    final db = await DatabaseHelper.instance.database;
+    final etat = await db.query('etats', where: 'id = ?', whereArgs: [widget.materiel.idEtat]);
+    _etat = etat[0]['nom'] as String;
+    setState(() {});
+  }
+
+  void _getCategories() async {
+    final db = await DatabaseHelper.instance.database;
+    _categories = await db.query('categories');
+    print(_categories);
+    setState(() {});
   }
 
   @override
@@ -52,14 +69,16 @@ class MaterielDetailsPageState extends State<MaterielDetailsPage> {
                   _selectedCategorie = newValue ?? 1;
                 });
               },
-              items: _categories.entries.map((MapEntry<int, String> categorie) {
+              items: _categories.map((Map<String, dynamic> categorie) {
                 return DropdownMenuItem<int>(
-                  value: categorie.key,
-                  child: Text(categorie.value),
+                  value: categorie['id'] as int,
+                  child: Text(categorie['nom'] as String),
                 );
               }).toList(),
               decoration: const InputDecoration(labelText: 'Catégorie'),
             ),
+            const SizedBox(height: 20),
+            Text('État: $_etat'),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
