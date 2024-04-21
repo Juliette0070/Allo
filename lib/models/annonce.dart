@@ -9,8 +9,9 @@ class Annonce {
   String _uuid;
   DateTime _dateAnn;
   int _dureeAnn; // en heures
+  String _commentaire;
 
-  Annonce(this._idAnn, this._nomAnn, this._descAnn, this._etatAnn, this._idCat, this._uuid, this._dateAnn, this._dureeAnn);
+  Annonce(this._idAnn, this._nomAnn, this._descAnn, this._etatAnn, this._idCat, this._uuid, this._dateAnn, this._dureeAnn, this._commentaire);
 
   int get idAnn => _idAnn;
 
@@ -28,6 +29,8 @@ class Annonce {
 
   int get dureeAnn => _dureeAnn;
 
+  String get commentaire => _commentaire;
+
   void setEtatAnn(int etat) {
     _etatAnn = etat;
   }
@@ -44,7 +47,8 @@ class Annonce {
     if (dateAnnString == "") {dateAnn = DateTime.now();}
     else {dateAnn = DateTime.parse(dateAnnString);}
     int dureeAnn = json['duree'] ?? 0;
-    return Annonce(idAnn, nomAnn, descAnn, etatAnn, idCat, uuid, dateAnn, dureeAnn);
+    String commentaire = json['commentaire'] ?? "";
+    return Annonce(idAnn, nomAnn, descAnn, etatAnn, idCat, uuid, dateAnn, dureeAnn, commentaire);
   }
 
   Map<String, dynamic> toJson() {
@@ -56,7 +60,8 @@ class Annonce {
       'id_categorie': _idCat,
       'id_utilisateur': _uuid,
       'date_debut': _dateAnn.toIso8601String(),
-      'duree': _dureeAnn
+      'duree': _dureeAnn,
+      'commentaire': _commentaire,
     };
   }
 }

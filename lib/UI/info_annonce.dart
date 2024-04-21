@@ -430,11 +430,13 @@ class _AnnonceDetailsPageState extends State<AnnonceDetailsPage> {
                   Text(
                     'État: $etat',
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   if (widget.annonce['id_etat'] == 4)
                     Text(
                       'Matériel: $materiel',
                     ),
+                  if (userUUID == annonceUserID && widget.annonce['id_etat'] == 5)
+                    Text("Retour: ${widget.annonce['commentaire']}"),
                 ],
               ),
             if (widget.annonce['id_etat'] == 4 && userUUID == annonceUserID)

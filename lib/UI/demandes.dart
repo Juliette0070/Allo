@@ -129,6 +129,7 @@ class NouvelleAnnonceScreenState extends State<NouvelleAnnonceScreen> {
       uuid,
       _selectedDate,
       duree,
+      "",
     );
 
     // Convertir l'annonce en JSON
