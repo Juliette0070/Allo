@@ -5,8 +5,9 @@ class Materiel {
   String _uuidUtilisateur;
   int _idCategorie;
   int _idEtat;
+  int? _idAnnonce;
 
-  Materiel(this._id, this._nom, this._description, this._uuidUtilisateur, this._idCategorie, this._idEtat);
+  Materiel(this._id, this._nom, this._description, this._uuidUtilisateur, this._idCategorie, this._idEtat, this._idAnnonce);
 
   int get id => _id;
   String get nom => _nom;
@@ -14,15 +15,25 @@ class Materiel {
   String get uuidUtilisateur => _uuidUtilisateur;
   int get idCategorie => _idCategorie;
   int get idEtat => _idEtat;
+  int? get idAnnonce => _idAnnonce;
 
-  factory Materiel.fromJson(dynamic json) {
-    int id = json['id'] ?? 0;
+  void setIdEtat(int idEtat) {
+    _idEtat = idEtat;
+  }
+
+  void setIdAnnonce(int idAnnonce) {
+    _idAnnonce = idAnnonce;
+  }
+
+  factory Materiel.fromJson(Map<String, dynamic> json) {
+    int id = json['id'];
     String nom = json['nom'] ?? "";
     String description = json['description'] ?? "";
-    String uuidUtilisateur = json['id_utilisateur'] ?? 0;
-    int idCategorie = json['id_categorie'] ?? 0;
-    int idEtat = json['id_etat'] ?? 0;
-    return Materiel(id, nom, description, uuidUtilisateur, idCategorie, idEtat);
+    String uuidUtilisateur = json['id_utilisateur'] ?? "";
+    int idCategorie = json['id_categorie'];
+    int idEtat = json['id_etat'];
+    int? idAnnonce = json['id_annonce'];
+    return Materiel(id, nom, description, uuidUtilisateur, idCategorie, idEtat, idAnnonce);
   }
 
   Map<String, dynamic> toMap() {
@@ -33,6 +44,7 @@ class Materiel {
       'uuid_utilisateur': uuidUtilisateur,
       'id_categorie': idCategorie,
       'id_etat': idEtat,
+      'id_annonce': idAnnonce,
     };
   }
 
@@ -44,6 +56,7 @@ class Materiel {
       map['uuid_utilisateur'],
       map['id_categorie'],
       map['id_etat'],
+      map['id_annonce'],
     );
   }
 
@@ -65,6 +78,7 @@ class Materiel {
     String? uuidUtilisateur,
     int? idCategorie,
     int? idEtat,
+    int? idAnnonce,
   }) {
     return Materiel(
       id ?? this.id,
@@ -73,11 +87,12 @@ class Materiel {
       uuidUtilisateur ?? this.uuidUtilisateur,
       idCategorie ?? this.idCategorie,
       idEtat ?? this.idEtat,
+      idAnnonce ?? this.idAnnonce,
     );
   }
 
   @override
   String toString() {
-    return 'Materiel{id: $_id, nom: $_nom, description: $_description, id_utilisateur: $_uuidUtilisateur, id_categorie: $_idCategorie, id_etat: $_idEtat}';
+    return '{"id": $_id, "nom": "$_nom", "description": "$_description", "id_utilisateur": "$_uuidUtilisateur", "id_categorie": $_idCategorie, "id_etat": $_idEtat, "id_annonce": $_idAnnonce}';
   }
 }

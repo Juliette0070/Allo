@@ -26,6 +26,25 @@ class RegisterState extends State<Register> {
 
     try {
       final response = await Supabase.instance.client.auth.signUp(email: email, password: password);
+      // afficher fenetre pour dire d'aller vérifier ses emails
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Confirmation de l\'inscription'),
+            content: const Text('Un email de vérification a été envoyé à votre adresse email. Veuillez vérifier votre boîte de réception.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _goToLogin(context);
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
       print('Inscription réussie: $response');
     } catch (error) {
       print("Erreur lors de l'inscription: $error");

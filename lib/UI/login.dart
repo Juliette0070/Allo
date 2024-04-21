@@ -25,7 +25,7 @@ class _LoginState extends State<Login> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const MyHomePage(title: "All'o")),
+        MaterialPageRoute(builder: (context) => const MyApp()),
       );
 
     } catch (error) {

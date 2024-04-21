@@ -17,6 +17,7 @@ class WidgetPretsState extends State<WidgetPrets> {
   @override
   void initState() {
     super.initState();
+    DatabaseHelper.instance.refreshMaterielsDisponibilite();
     updateMateriel();
   }
 
@@ -57,7 +58,7 @@ class WidgetPretsState extends State<WidgetPrets> {
                 var logo = const Icon(Icons.help, color: Colors.yellow);
                 if (materiel.idEtat == 1) {logo = const Icon(Icons.check_circle, color: Colors.green);}
                 else if (materiel.idEtat == 2) {logo = const Icon(Icons.cancel, color: Colors.red);}
-                else if (materiel.idEtat == 3) {logo = const Icon(Icons.pending);}
+                else if (materiel.idEtat == 3) {logo = const Icon(Icons.pending, color: Colors.orange);}
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(

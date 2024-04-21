@@ -17,6 +17,7 @@ class WidgetMaterielState extends State<WidgetMateriel> {
   @override
   void initState() {
     super.initState();
+    DatabaseHelper.instance.refreshMaterielsDisponibilite();
     updateMateriel();
   }
 
@@ -156,7 +157,9 @@ class AjoutMaterielScreenState extends State<AjoutMaterielScreen> {
         description,
         _userUUID, // Utilisation de l'UUID de l'utilisateur
         categorie,
-        1);
+        1,
+        null,
+    );
     await DatabaseHelper.instance.insertMateriel(materiel);
     // Utiliser Navigator.pop avec les données du nouveau matériel ajouté
     Navigator.pop(context, materiel);

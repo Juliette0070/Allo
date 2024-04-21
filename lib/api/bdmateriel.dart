@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:allo/models/materiel.dart';
+import 'package:allo/api/bdapi.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DatabaseHelper {
   static const _databaseName = 'mon_application.db';
@@ -58,6 +62,7 @@ class DatabaseHelper {
         uuid_utilisateur TEXT NOT NULL,
         id_categorie INTEGER,
         id_etat INTEGER,
+        id_annonce INTEGER,
         FOREIGN KEY (id_categorie) REFERENCES categories (id),
         FOREIGN KEY (id_etat) REFERENCES etats (id)
       );
@@ -104,7 +109,8 @@ class DatabaseHelper {
 
   Future<List<Materiel>> getMaterielsNonDisponibles(uuid) async {
     final db = await database;
-    final List<Map<String, dynamic>> materielsMap = await db.query(_tableMateriels, where: 'id_etat != 1 and uuid_utilisateur == ?', whereArgs: [uuid]);
+    final List<Map<String, dynamic>> materielsMap = await db.query(_tableMateriels, where: '(id_etat = 2 or id_etat = 3) and uuid_utilisateur == ?', whereArgs: [uuid]);
+    print(materielsMap);
     return List.generate(materielsMap.length, (index) {
       return Materiel.fromMap(materielsMap[index]);
     });
@@ -127,5 +133,64 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  // actualiser la disponibilité des matériels depuis supabase
+  Future<void> refreshMaterielsDisponibilite() async {
+    final SupabaseService supabaseService = SupabaseService(Supabase.instance.client);
+    // materiels en cours de prêt
+    List<Map<String, dynamic>> materielsEnCoursJson = await supabaseService.fetchMaterielsEnCours();
+    List<Materiel> materielsEnCours = [];
+    for (var materielJson in materielsEnCoursJson) {
+      String matJson = materielJson['json_materiel_pret'];
+      Map<String, dynamic> matMap = jsonDecode(matJson);
+      materielsEnCours.add(Materiel.fromJson(matMap));
+    }
+    // materiels des prêts finis
+    List<Map<String, dynamic>> materielsFinisJson = await supabaseService.fetchMaterielsFinis();
+    List<Materiel> materielsFinis = [];
+    for (var materielJson in materielsFinisJson) {
+      String matJson = materielJson['json_materiel_pret'];
+      Map<String, dynamic> matMap = jsonDecode(matJson);
+      materielsFinis.add(Materiel.fromJson(matMap));
+    }
+    List<Materiel> materiels = await getAllMateriels();
+    bool materielTrouve = false;
+    for (var materiel in materiels) {
+      for (var matEnCours in materielsEnCours) {
+        if (materielsEgaux(materiel, matEnCours)) {
+          materiel.setIdEtat(2);
+          await updateMateriel(materiel);
+          materielTrouve = true;
+          break;
+        }
+      }
+      for (var matFini in materielsFinis) {
+        if (materielsEgaux(materiel, matFini)) {
+          materiel.setIdEtat(3);
+          await updateMateriel(materiel);
+          materielTrouve = true;
+          break;
+        }
+      }
+      if (materielTrouve) {
+        materielTrouve = false;
+        continue;
+      } else {
+        materiel.setIdEtat(1);
+        await updateMateriel(materiel);
+      }
+    }
+  }
+
+  // vérifie si deux matériels sont égaux
+  bool materielsEgaux(Materiel mat1, Materiel mat2) {
+    if (mat1.id == mat2.id && mat1.nom == mat2.nom &&
+        mat1.description == mat2.description &&
+        mat1.uuidUtilisateur == mat2.uuidUtilisateur &&
+        mat1.idCategorie == mat2.idCategorie) {
+      return true;
+    }
+    return false;
   }
 }
